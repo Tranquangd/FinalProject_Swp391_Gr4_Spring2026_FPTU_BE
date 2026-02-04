@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Users;
+import com.example.demo.dto.request.CreateUserRequest;
+import com.example.demo.dto.request.UpdateUserRequest;
+import com.example.demo.dto.response.UserResponse;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,7 +26,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
         try {
-            List<Users> users = userService.getAllUsers();
+            List<UserResponse> users = userService.getAllUsers();
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
@@ -37,14 +39,12 @@ public class UserController {
     
     // GET /api/users/{id} - Get user by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Users> getUserById(@PathVariable Integer id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Integer id) {
         try {
-            Optional<Users> user = userService.getUserById(id);
-            if (user.isPresent()) {
-                return ResponseEntity.ok(user.get());
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+            UserResponse user = userService.getUserById(id);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -52,14 +52,12 @@ public class UserController {
     
     // GET /api/users/email/{email} - Get user by email
     @GetMapping("/email/{email}")
-    public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<UserResponse> getUserByEmail(@PathVariable String email) {
         try {
-            Optional<Users> user = userService.getUserByEmail(email);
-            if (user.isPresent()) {
-                return ResponseEntity.ok(user.get());
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+            UserResponse user = userService.getUserByEmail(email);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -67,9 +65,9 @@ public class UserController {
     
     // GET /api/users/role/{role} - Get users by role
     @GetMapping("/role/{role}")
-    public ResponseEntity<List<Users>> getUsersByRole(@PathVariable String role) {
+    public ResponseEntity<List<UserResponse>> getUsersByRole(@PathVariable String role) {
         try {
-            List<Users> users = userService.getUsersByRole(role);
+            List<UserResponse> users = userService.getUsersByRole(role);
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -78,9 +76,9 @@ public class UserController {
     
     // GET /api/users/active - Get active users
     @GetMapping("/active")
-    public ResponseEntity<List<Users>> getActiveUsers() {
+    public ResponseEntity<List<UserResponse>> getActiveUsers() {
         try {
-            List<Users> users = userService.getActiveUsers();
+            List<UserResponse> users = userService.getActiveUsers();
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -89,9 +87,9 @@ public class UserController {
     
     // GET /api/users/inactive - Get inactive users
     @GetMapping("/inactive")
-    public ResponseEntity<List<Users>> getInactiveUsers() {
+    public ResponseEntity<List<UserResponse>> getInactiveUsers() {
         try {
-            List<Users> users = userService.getInactiveUsers();
+            List<UserResponse> users = userService.getInactiveUsers();
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -100,9 +98,9 @@ public class UserController {
     
     // GET /api/users/search?name={name} - Search users by name
     @GetMapping("/search")
-    public ResponseEntity<List<Users>> searchUsers(@RequestParam String name) {
+    public ResponseEntity<List<UserResponse>> searchUsers(@RequestParam String name) {
         try {
-            List<Users> users = userService.searchUsersByName(name);
+            List<UserResponse> users = userService.searchUsersByName(name);
             return ResponseEntity.ok(users);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -111,9 +109,9 @@ public class UserController {
     
     // POST /api/users - Create new user
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody Users user) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest request) {
         try {
-            Users createdUser = userService.createUser(user);
+            UserResponse createdUser = userService.createUser(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();
@@ -128,9 +126,9 @@ public class UserController {
     
     // PUT /api/users/{id} - Update user
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Integer id, @RequestBody Users userDetails) {
+    public ResponseEntity<?> updateUser(@PathVariable Integer id, @Valid @RequestBody UpdateUserRequest request) {
         try {
-            Users updatedUser = userService.updateUser(id, userDetails);
+            UserResponse updatedUser = userService.updateUser(id, request);
             return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();
@@ -166,7 +164,7 @@ public class UserController {
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<?> deactivateUser(@PathVariable Integer id) {
         try {
-            Users user = userService.deactivateUser(id);
+            UserResponse user = userService.deactivateUser(id);
             return ResponseEntity.ok(user);
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();
@@ -183,7 +181,7 @@ public class UserController {
     @PatchMapping("/{id}/activate")
     public ResponseEntity<?> activateUser(@PathVariable Integer id) {
         try {
-            Users user = userService.activateUser(id);
+            UserResponse user = userService.activateUser(id);
             return ResponseEntity.ok(user);
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();

@@ -1,50 +1,28 @@
-package com.example.demo.entity;
+package com.example.demo.dto.response;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "Users")
-public class Users {
+public class UserResponse {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "UserID", nullable = false)
     private Integer userId;
-    
-    @Column(name = "FullName", nullable = false, length = 100)
     private String fullName;
-    
-    @Column(name = "Email", nullable = false, unique = true, length = 100)
     private String email;
-    
-    @Column(name = "PasswordHash", length = 255)
-    private String passwordHash;
-    
-    @Column(name = "Role", length = 20)
-    private String role; // ADMIN, LECTURER, STUDENT
-    
-    @Column(name = "JiraAccountId", length = 100)
+    private String role;
     private String jiraAccountId;
-    
-    @Column(name = "GitHubUsername", length = 100)
     private String gitHubUsername;
-    
-    @Column(name = "AvatarUrl", length = 500)
     private String avatarUrl;
-    
-    @Column(name = "IsActive")
     private Boolean isActive;
     
-    // Constructors
-    public Users() {
-    }
+    public UserResponse() {}
     
-    public Users(String fullName, String email, String passwordHash, String role) {
+    public UserResponse(Integer userId, String fullName, String email, String role, 
+                       String jiraAccountId, String gitHubUsername, String avatarUrl, Boolean isActive) {
+        this.userId = userId;
         this.fullName = fullName;
         this.email = email;
-        this.passwordHash = passwordHash;
         this.role = role;
-        this.isActive = true;
+        this.jiraAccountId = jiraAccountId;
+        this.gitHubUsername = gitHubUsername;
+        this.avatarUrl = avatarUrl;
+        this.isActive = isActive;
     }
     
     // Getters and Setters
@@ -70,14 +48,6 @@ public class Users {
     
     public void setEmail(String email) {
         this.email = email;
-    }
-    
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-    
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
     }
     
     public String getRole() {
@@ -118,16 +88,5 @@ public class Users {
     
     public void setIsActive(Boolean isActive) {
         this.isActive = isActive;
-    }
-    
-    @Override
-    public String toString() {
-        return "Users{" +
-                "userId=" + userId +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", role='" + role + '\'' +
-                ", isActive=" + isActive +
-                '}';
     }
 }
